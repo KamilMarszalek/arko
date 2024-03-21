@@ -1,10 +1,9 @@
-#Write a program displaying the longest sequence of digits found in a string. 
         .data
 prompt: .asciz "Enter string:\n"
 buf:    .space 100
 
-        .globl main
         .text
+        .globl main
 main:
         li a7, 4
         la a0, prompt
@@ -17,40 +16,61 @@ main:
 
         la t0, buf
         lb t1, (t0)
+
+        li t2, 0
+        la t3, buf
+
+        li s0, 0
+        la s1, buf
+
+        li t4, '0'
+        li t5, '9'
+
         beqz t1, end
-        li s0, 0 #counter
-        li s1, 0 #the longest length
-        mv s2, t0
-        mv s3, t0
-        li t2, '0'
-        li t3, '9'
 
 loop:
-        beqz t1, checkEnd
-        bgt t1, t3, resetCounter
-        blt t1, t2, resetCounter
-        addi s0, s0, 1
-        bgt s0, s1, updateLength
+        blt t1, t4, updateSeq
+        bgt t1, t5, updateSeq
+        beqz t2, firstNum
+
+        addi t2, t2, 1
+
 next:
         addi t0, t0, 1
         lb t1, (t0)
-        j loop
-resetCounter:
-        add s0, zero, zero
-        mv s2, t0
+        bnez t1, loop
+        j end
+
+firstNum:
+        sub t3, t0, a0
+        addi t2, t2, 1
         j next
-updateLength:
-        mv  s1, s0
-        mv s3, s2
+
+updateSeq:
+        blt s0, t2, store
         j next
-checkEnd:
-        bgt s0, s1, updateLength
-end: 
-        add s2, s2, s1
-        sb zero, (s2)
-        li a7, 4
-        mv a0, s3
+
+store:
+        mv s0, t2
+        mv s1, t3
+        li t2, 0
+        j next
+
+end:
+        la t0, buf
+        add t0, s1, t0
+
+print:
+        beqz s0, exit
+        li a7, 11
+        lb a0, (t0)
         ecall
-        
+
+        addi t0, t0 , 1
+        addi s0, s0, -1
+
+        j print
+
+exit:
         li a7, 10
         ecall
