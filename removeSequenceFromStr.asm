@@ -34,6 +34,7 @@ main:
 	add t0, t0, t2
 	add t1, t1, t2
 	mv s0, t2
+
 length:
 	lb t3, (t2)
 	beqz t3, checking
